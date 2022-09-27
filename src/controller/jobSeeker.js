@@ -1,5 +1,6 @@
 const jobSeekerModel = require("../model/jobSeeker.js");
 const jwt = require("jsonwebtoken");
+const { findOne } = require("../model/jobSeeker.js");
 
 const createUser = async (req, res) => {
   try {
@@ -31,20 +32,26 @@ const login = async (req, res) => {
 const fetchSeeker = async (req, res) => {
   try {
     let data = req.query;
-    if (!data.Skill) {
-      const findData = await jobSeekerModel
-        .find()
-        .sort({ Name: 1 })
-        .collation({ locale: "en" });
+    const userId = req.params.userId;
+    if (res.token.userId != userId)
+      return res.status(401).send({ status: false, msg: "Unauthorized" });
+      const findUser = await jobSeekerModel.findById(userId);
+      if (!findUser)
+      return res.status(404).send({ status: false, msg: "User Not Found" });
+      if (!data.Skill) {
+        const findData = await jobSeekerModel
+          .find()
+          .sort({ Name: 1 })
+          .collation({ locale: "en" });
 
-      if (findData.length == 0)
-        return res.status(404).send({ status: false, msg: "No Data Found" });
-      return res.status(200).send({
-        status: true,
-        msg: `${findData.length} Match found`,
-        data: findData,
-      });
-    }
+        if (findData.length == 0)
+          return res.status(404).send({ status: false, msg: "No Data Found" });
+        return res.status(200).send({
+          status: true,
+          msg: `${findData.length} Match found`,
+          data: findData,
+        });
+      }
     const findData = await jobSeekerModel
       .find({ Skill: { $regex: data.Skill } })
       .sort({ Name: 1 })
