@@ -1,6 +1,6 @@
-const jobSeekerModel = require("../model/jobSeeker.js");
+const seekerModel = require("../model/seeker.js");
+const jobModel=require("../model/job.js")
 const jwt = require("jsonwebtoken");
-const { findOne } = require("../model/jobSeeker.js");
 
 const createUser = async (req, res) => {
   try {
@@ -8,7 +8,7 @@ const createUser = async (req, res) => {
     //if skill is not present in body
     if (!data.Skill)
       return res.status(400).send({ status: false, msg: "Skill is mandatory" });
-    const saveData = await jobSeekerModel.create(data);
+    const saveData = await seekerModel.create(data);
     res.status(201).send({ status: true, msg: "Success", data: saveData });
   } catch (error) {
     return res.status(500).send({ status: false, msg: error.message });
@@ -19,7 +19,7 @@ const login = async (req, res) => {
   try {
     const data = req.body;
     //searching for email id in database
-    const findEmail = await jobSeekerModel.findOne({ Email: data.Email });
+    const findEmail = await seekerModel.findOne({ Email: data.Email });
     if (!findEmail)
       return res.status(404).send({ status: false, msg: "User not found" });
     //signing in using jwt
@@ -41,12 +41,12 @@ const fetchSeeker = async (req, res) => {
     if (res.token.userId != userId)
       return res.status(401).send({ status: false, msg: "Unauthorized" });
     //checking email is present in database
-    const findUser = await jobSeekerModel.findById(userId);
+    const findUser = await seekerModel.findById(userId);
     if (!findUser)
       return res.status(404).send({ status: false, msg: "User Not Found" });
     //when thw user is not filtering with any tag
     if (!data.Skill) {
-      const findData = await jobSeekerModel
+      const findData = await jobModel
         .find()
         .sort({ Name: 1 })
         .collation({ locale: "en" });
@@ -60,7 +60,7 @@ const fetchSeeker = async (req, res) => {
       });
     }
     //when the user is filtering with any tags
-    const findData = await jobSeekerModel
+    const findData = await jobModel
       .find({ Skill: { $regex: data.Skill } })
       .sort({ Name: 1 })
       .collation({ locale: "en" });

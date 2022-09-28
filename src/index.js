@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const route = require("./routes/route.js");
+const job=require("./routes/job.js")
+const seeker = require("./routes/seeker.js");
 const app = express();
 
 app.use(express.json());
@@ -12,7 +13,8 @@ mongoose
   .then(() => console.log("MongoDB is Connected"))
   .catch((err) => console.log(err.message));
 
-app.use("/", route);
+app.use("/", seeker);
+app.use("/", job);
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("Server running on " + (process.env.PORT || 3000));

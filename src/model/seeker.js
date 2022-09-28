@@ -7,4 +7,4 @@ const seekerSchema = mongoose.Schema({
   Email: String,
   Password: String,
 });
-module.exports = mongoose.model("JobSeeker", seekerSchema);
+module.exports = mongoose.model("Seeker", seekerSchema);
